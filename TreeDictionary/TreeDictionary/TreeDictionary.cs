@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TreeDictionary.Trees;
 using TreeDictionary.Trees.AvlTree;
+using TreeDictionary.Trees.RBTree;
 
 namespace TreeDictionary.TreeDictionary
 {
@@ -20,11 +21,11 @@ namespace TreeDictionary.TreeDictionary
             switch (treeType)
             {
                 case TreeType.AVL:
-                    treeContainer = new AvlTree<DictionaryPair<TKey, TValue>>();
+                    this.treeContainer = new AvlTree<DictionaryPair<TKey, TValue>>();
                     break;
 
                 case TreeType.RB:
-                    //treeContainer = new AvlTree<DictionaryPair<TKey, TValue>>();
+                    treeContainer = new RBTree<DictionaryPair<TKey, TValue>>();
                     break;
             }
         }
@@ -60,7 +61,12 @@ namespace TreeDictionary.TreeDictionary
         {
             get
             {
-                throw new NotImplementedException();
+                ICollection<TKey> keys = new List<TKey>();
+                foreach (var pair in treeContainer)
+                {
+                    keys.Add(pair.Key);
+                }
+                return keys;
             }
         }
 
@@ -68,58 +74,57 @@ namespace TreeDictionary.TreeDictionary
         {
             get
             {
-                throw new NotImplementedException();
+                ICollection<TValue> values = new List<TValue>();
+                foreach (var pair in treeContainer)
+                {
+                    values.Add(pair.Value);
+                }
+                return values;
             }
         }
 
-        public Int32 Count
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public Boolean IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public Int32 Count => this.treeContainer.Count;
+        public Boolean IsReadOnly => false;
 
         public void Add(TKey key, TValue value)
         {
             DictionaryPair<TKey, TValue> pair = new DictionaryPair<TKey, TValue>(key, value);
-            treeContainer.Insert(pair);
+            this.treeContainer.Insert(pair);
         }
 
         public void Add(KeyValuePair<TKey, TValue> item)
         {
-            Add(item.Key, item.Value);
+            this.Add(item.Key, item.Value);
         }
 
         public void Clear()
         {
-            treeContainer.Clear();
+            this.treeContainer.Clear();
         }
 
         public Boolean Contains(KeyValuePair<TKey, TValue> item)
         {
-            throw new NotImplementedException();
+            return this.ContainsKey(item.Key);
         }
 
         public Boolean ContainsKey(TKey key)
         {
             DictionaryPair<TKey, TValue> pair = new DictionaryPair<TKey, TValue>(key, default(TValue));
-            Boolean contains = treeContainer.Search(ref pair);
+            Boolean contains = this.treeContainer.Search(ref pair);
 
             return contains;
         }
 
         public void CopyTo(KeyValuePair<TKey, TValue>[] array, Int32 arrayIndex)
         {
-            throw new NotImplementedException();
+            foreach (var pair in treeContainer)
+            {
+                if (arrayIndex >= array.Length || arrayIndex < 0)
+                {
+                    return;
+                }
+                array[arrayIndex] = new KeyValuePair<TKey, TValue>(pair.Key, pair.Value);
+            }
         }
 
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
@@ -129,12 +134,12 @@ namespace TreeDictionary.TreeDictionary
 
         public Boolean Remove(TKey key)
         {
-            return treeContainer.Delete(new DictionaryPair<TKey, TValue>(key, default(TValue)));
+            return this.treeContainer.Delete(new DictionaryPair<TKey, TValue>(key, default(TValue)));
         }
 
         public Boolean Remove(KeyValuePair<TKey, TValue> item)
         {
-            return Remove(item.Key);
+            return this.Remove(item.Key);
         }
 
         public Boolean TryGetValue(TKey key, out TValue value)
@@ -153,7 +158,7 @@ namespace TreeDictionary.TreeDictionary
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return treeContainer.GetEnumerator();
+            return this.treeContainer.GetEnumerator();
         }
     }
 }

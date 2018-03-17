@@ -51,7 +51,7 @@
     <Compile Include="Trees\AvlTree\AvlTree.cs" />
     <Compile Include="Trees\ITree.cs" />
     <Compile Include="Trees\RBTree\RBNode.cs" />
-    <Compile Include="Trees\RBTree\RBNodeColor.cs" />
+    <Compile Include="Trees\RBTree\Color.cs" />
     <Compile Include="Trees\RBTree\RBNodeEnumerator.cs" />
     <Compile Include="Trees\RBTree\RBTree.cs" />
     <Compile Include="Trees\TreeType.cs" />

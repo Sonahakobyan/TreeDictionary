@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TreeDictionary.Trees.RBTree
 {
-    public enum RBNodeColor : Byte
+    public enum Color : Byte
     {
         Red,
         Black

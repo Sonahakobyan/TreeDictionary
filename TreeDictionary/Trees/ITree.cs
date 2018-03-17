@@ -5,6 +5,7 @@ namespace TreeDictionary.Trees
 {
     public interface ITree<T> : IEnumerable<T> where T : IComparable
     {
+        Int32 Count { get;}
         void Insert(T info);
 
         Boolean Delete(T info);

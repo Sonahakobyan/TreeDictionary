@@ -8,18 +8,19 @@ namespace TreeDictionary.Trees.AvlTree
     {
         private AvlNode<T> root;
 
+        public Int32 Count { get; private set; }
         public void Insert(T info)
         {
-            if (root == null)
+            if (this.root == null)
             {
-                root = new AvlNode<T>
+                this.root = new AvlNode<T>
                 {
                     Info = info
                 };
             }
             else
             {
-                AvlNode<T> node = root;
+                AvlNode<T> node = this.root;
 
                 while (node != null)
                 {
@@ -33,7 +34,7 @@ namespace TreeDictionary.Trees.AvlTree
                         {
                             node.Left = new AvlNode<T> { Info = info, Parent = node };
 
-                            InsertBalance(node, 1);
+                            this.InsertBalance(node, 1);
 
                             return;
                         }
@@ -50,7 +51,7 @@ namespace TreeDictionary.Trees.AvlTree
                         {
                             node.Right = new AvlNode<T> { Info = info, Parent = node };
 
-                            InsertBalance(node, -1);
+                            this.InsertBalance(node, -1);
 
                             return;
                         }
@@ -67,19 +68,22 @@ namespace TreeDictionary.Trees.AvlTree
                     }
                 }
             }
+            Count++;
         }
 
         public Boolean Delete(T info)
         {
-            AvlNode<T> node = root;
+            AvlNode<T> node = this.root;
 
             while (node != null)
             {
-                if (info.CompareTo(node.Info) < 0)
+                Int32 compare = info.CompareTo(node.Info);
+
+                if (compare < 0)
                 {
                     node = node.Left;
                 }
-                else if (info.CompareTo(node.Info) > 0)
+                else if (compare > 0)
                 {
                     node = node.Right;
                 }
@@ -94,7 +98,7 @@ namespace TreeDictionary.Trees.AvlTree
                         {
                             if (node == root)
                             {
-                                root = null;
+                                this.root = null;
                             }
                             else
                             {
@@ -104,13 +108,13 @@ namespace TreeDictionary.Trees.AvlTree
                                 {
                                     parent.Left = null;
 
-                                    DeleteBalance(parent, -1);
+                                    this.DeleteBalance(parent, -1);
                                 }
                                 else
                                 {
                                     parent.Right = null;
 
-                                    DeleteBalance(parent, 1);
+                                    this.DeleteBalance(parent, 1);
                                 }
                             }
                         }
@@ -118,14 +122,14 @@ namespace TreeDictionary.Trees.AvlTree
                         {
                             Replace(node, right);
 
-                            DeleteBalance(node, 0);
+                            this.DeleteBalance(node, 0);
                         }
                     }
                     else if (right == null)
                     {
                         Replace(node, left);
 
-                        DeleteBalance(node, 0);
+                        this.DeleteBalance(node, 0);
                     }
                     else
                     {
@@ -146,7 +150,7 @@ namespace TreeDictionary.Trees.AvlTree
 
                             if (node == root)
                             {
-                                root = successor;
+                                this.root = successor;
                             }
                             else
                             {
@@ -160,7 +164,7 @@ namespace TreeDictionary.Trees.AvlTree
                                 }
                             }
 
-                            DeleteBalance(successor, 1);
+                            this.DeleteBalance(successor, 1);
                         }
                         else
                         {
@@ -214,10 +218,10 @@ namespace TreeDictionary.Trees.AvlTree
                                 }
                             }
 
-                            DeleteBalance(successorParent, -1);
+                            this.DeleteBalance(successorParent, -1);
                         }
                     }
-
+                    Count--;
                     return true;
                 }
             }
@@ -227,15 +231,17 @@ namespace TreeDictionary.Trees.AvlTree
 
         public Boolean Search(ref T info)
         {
-            AvlNode<T> node = root;
+            AvlNode<T> node = this.root;
 
             while (node != null)
             {
-                if (info.CompareTo(node.Info) < 0)
+                Int32 compare = info.CompareTo(node.Info);
+
+                if (compare < 0)
                 {
                     node = node.Left;
                 }
-                else if (info.CompareTo(node.Info) > 0)
+                else if (compare > 0)
                 {
                     node = node.Right;
                 }
@@ -254,7 +260,8 @@ namespace TreeDictionary.Trees.AvlTree
 
         public void Clear()
         {
-            root = null;
+            this.root = null;
+            Count = 0;
         }
 
         private void InsertBalance(AvlNode<T> node, Int32 balance)
@@ -271,11 +278,11 @@ namespace TreeDictionary.Trees.AvlTree
                 {
                     if (node.Left.Balance == 1)
                     {
-                        RotateRight(node);
+                        this.RotateRight(node);
                     }
                     else
                     {
-                        RotateLeftRight(node);
+                        this.RotateLeftRight(node);
                     }
 
                     return;
@@ -284,11 +291,11 @@ namespace TreeDictionary.Trees.AvlTree
                 {
                     if (node.Right.Balance == -1)
                     {
-                        RotateLeft(node);
+                        this.RotateLeft(node);
                     }
                     else
                     {
-                        RotateRightLeft(node);
+                        this.RotateRightLeft(node);
                     }
 
                     return;
@@ -356,9 +363,9 @@ namespace TreeDictionary.Trees.AvlTree
                 leftRight.Parent = node;
             }
 
-            if (node == root)
+            if (node == this.root)
             {
-                root = left;
+                this.root = left;
             }
             else if (parent.Left == node)
             {
@@ -461,9 +468,9 @@ namespace TreeDictionary.Trees.AvlTree
                 rightLeftRight.Parent = right;
             }
 
-            if (node == root)
+            if (node == this.root)
             {
-                root = rightLeft;
+                this.root = rightLeft;
             }
             else if (parent.Right == node)
             {
@@ -505,7 +512,7 @@ namespace TreeDictionary.Trees.AvlTree
                 {
                     if (node.Left.Balance >= 0)
                     {
-                        node = RotateRight(node);
+                        node = this.RotateRight(node);
 
                         if (node.Balance == -1)
                         {
@@ -514,14 +521,14 @@ namespace TreeDictionary.Trees.AvlTree
                     }
                     else
                     {
-                        node = RotateLeftRight(node);
+                        node = this.RotateLeftRight(node);
                     }
                 }
                 else if (balance == -2)
                 {
                     if (node.Right.Balance <= 0)
                     {
-                        node = RotateLeft(node);
+                        node = this.RotateLeft(node);
 
                         if (node.Balance == 1)
                         {
@@ -530,7 +537,7 @@ namespace TreeDictionary.Trees.AvlTree
                     }
                     else
                     {
-                        node = RotateRightLeft(node);
+                        node = this.RotateRightLeft(node);
                     }
                 }
                 else if (balance != 0)
@@ -577,7 +584,7 @@ namespace TreeDictionary.Trees.AvlTree
 
         public IEnumerator<T> GetEnumerator()
         {
-            return new AvlNodeEnumerator<T>(root);
+            return new AvlNodeEnumerator<T>(this.root);
         }
     }
 }
