@@ -4,11 +4,26 @@ using System.Collections.Generic;
 
 namespace TreeDictionary.Trees.AvlTree
 {
+    /// <summary>
+    /// AVL tree implementation
+    /// </summary>
+    /// <typeparam name="T">Generic type of info</typeparam>
     public class AvlTree<T> : ITree<T> where T : IComparable
     {
+        /// <summary>
+        /// The root of the tree
+        /// </summary>
         private AvlNode<T> root;
 
+        /// <summary>
+        /// The count of nodes
+        /// </summary>
         public Int32 Count { get; private set; }
+
+        /// <summary>
+        /// Insert the given node in the tree
+        /// </summary>
+        /// <param name="info"></param>
         public void Insert(T info)
         {
             if (this.root == null)
@@ -71,6 +86,12 @@ namespace TreeDictionary.Trees.AvlTree
             Count++;
         }
 
+        /// <summary>
+        /// Return false if the tree dosn't contain a node with given info.
+        /// Otherwise delete the node and return true.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
         public Boolean Delete(T info)
         {
             AvlNode<T> node = this.root;
@@ -229,6 +250,12 @@ namespace TreeDictionary.Trees.AvlTree
             return false;
         }
 
+        /// <summary>
+        /// Return false if the tree dosn't contain a node with given info.
+        /// Otherwise return info by ref parameter and return true.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns></returns>
         public Boolean Search(ref T info)
         {
             AvlNode<T> node = this.root;
@@ -258,12 +285,20 @@ namespace TreeDictionary.Trees.AvlTree
             return false;
         }
 
+        /// <summary>
+        /// Removes all nodes from the tree
+        /// </summary>
         public void Clear()
         {
             this.root = null;
             Count = 0;
         }
 
+        /// <summary>
+        /// Fix tree balance after insert operation
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="balance"></param>
         private void InsertBalance(AvlNode<T> node, Int32 balance)
         {
             while (node != null)
@@ -306,6 +341,65 @@ namespace TreeDictionary.Trees.AvlTree
                 if (parent != null)
                 {
                     balance = parent.Left == node ? 1 : -1;
+                }
+
+                node = parent;
+            }
+        }
+
+        /// <summary>
+        /// Fix tree balance after delete operation
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="balance"></param>
+        private void DeleteBalance(AvlNode<T> node, Int32 balance)
+        {
+            while (node != null)
+            {
+                balance = (node.Balance += balance);
+
+                if (balance == 2)
+                {
+                    if (node.Left.Balance >= 0)
+                    {
+                        node = this.RotateRight(node);
+
+                        if (node.Balance == -1)
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        node = this.RotateLeftRight(node);
+                    }
+                }
+                else if (balance == -2)
+                {
+                    if (node.Right.Balance <= 0)
+                    {
+                        node = this.RotateLeft(node);
+
+                        if (node.Balance == 1)
+                        {
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        node = this.RotateRightLeft(node);
+                    }
+                }
+                else if (balance != 0)
+                {
+                    return;
+                }
+
+                AvlNode<T> parent = node.Parent;
+
+                if (parent != null)
+                {
+                    balance = parent.Left == node ? -1 : 1;
                 }
 
                 node = parent;
@@ -500,60 +594,6 @@ namespace TreeDictionary.Trees.AvlTree
             rightLeft.Balance = 0;
 
             return rightLeft;
-        }
-
-        private void DeleteBalance(AvlNode<T> node, Int32 balance)
-        {
-            while (node != null)
-            {
-                balance = (node.Balance += balance);
-
-                if (balance == 2)
-                {
-                    if (node.Left.Balance >= 0)
-                    {
-                        node = this.RotateRight(node);
-
-                        if (node.Balance == -1)
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        node = this.RotateLeftRight(node);
-                    }
-                }
-                else if (balance == -2)
-                {
-                    if (node.Right.Balance <= 0)
-                    {
-                        node = this.RotateLeft(node);
-
-                        if (node.Balance == 1)
-                        {
-                            return;
-                        }
-                    }
-                    else
-                    {
-                        node = this.RotateRightLeft(node);
-                    }
-                }
-                else if (balance != 0)
-                {
-                    return;
-                }
-
-                AvlNode<T> parent = node.Parent;
-
-                if (parent != null)
-                {
-                    balance = parent.Left == node ? -1 : 1;
-                }
-
-                node = parent;
-            }
         }
 
         private static void Replace(AvlNode<T> target, AvlNode<T> source)

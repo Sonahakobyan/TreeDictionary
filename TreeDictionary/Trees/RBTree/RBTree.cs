@@ -4,17 +4,26 @@ using System.Collections.Generic;
 
 namespace TreeDictionary.Trees.RBTree
 {
+    /// <summary>
+    /// Red Black tree implementation
+    /// </summary>
+    /// <typeparam name="T"> Generic type of info </typeparam>
     public class RBTree<T> : ITree<T> where T : IComparable
     {
+        /// <summary>
+        /// The root of the tree
+        /// </summary>
         private RBNode<T> root;
-
-        private readonly RBNode<T> NIL = new RBNode<T>
-        {
-            Color = Color.Black
-        };
-
+        
+        /// <summary>
+        /// The count of nodes
+        /// </summary>
         public Int32 Count { get; private set; }
 
+        /// <summary>
+        /// Insert the given node in the tree.
+        /// </summary>
+        /// <param name="info"> The info </param>
         public void Insert(T info)
         {
             if (this.root == null)
@@ -23,15 +32,16 @@ namespace TreeDictionary.Trees.RBTree
                 {
                     Info = info,
                     Color = Color.Black,
-                    Right = NIL,
-                    Left = NIL,
-                    Parent = NIL
+                    Right = RBNode<T>.NIL,
+                    Left = RBNode<T>.NIL,
+                    Parent = RBNode<T>.NIL
                 };
             }
             else
             {
                 RBNode<T> node = this.root;
-                while (node != null)
+
+                while (node != RBNode<T>.NIL)
                 {
                     Int32 compare = info.CompareTo(node.Info);
 
@@ -39,15 +49,15 @@ namespace TreeDictionary.Trees.RBTree
                     {
                         RBNode<T> left = node.Left;
 
-                        if (left == null)
+                        if (left == RBNode<T>.NIL)
                         {
                             node.Left = new RBNode<T>
                             {
                                 Info = info,
                                 Color = Color.Red,
                                 Parent = node,
-                                Left = NIL,
-                                Right = NIL
+                                Left = RBNode<T>.NIL,
+                                Right = RBNode<T>.NIL
                             };
                             InsertFixup(node.Left);
                             return;
@@ -61,16 +71,17 @@ namespace TreeDictionary.Trees.RBTree
                     {
                         RBNode<T> right = node.Right;
 
-                        if (right == null)
+                        if (right == RBNode<T>.NIL)
                         {
                             node.Right = new RBNode<T>
                             {
                                 Info = info,
                                 Color = Color.Red,
                                 Parent = node,
-                                Left = NIL,
-                                Right = NIL
+                                Left = RBNode<T>.NIL,
+                                Right = RBNode<T>.NIL
                             };
+
                             InsertFixup(node.Right);
                             return;
                         }
@@ -89,6 +100,10 @@ namespace TreeDictionary.Trees.RBTree
             Count++;
         }
 
+        /// <summary>
+        /// Fix the tree after insert operation.
+        /// </summary>
+        /// <param name="node"> Node which violates the tree </param>
         private void InsertFixup(RBNode<T> node)
         {
             while (node.Parent.Color == Color.Red)
@@ -108,9 +123,16 @@ namespace TreeDictionary.Trees.RBTree
                         node = node.Parent;
                         this.LeftRotate(node);
                     }
-                    node.Parent.Color = Color.Black;
-                    node.Parent.Parent.Color = Color.Red;
-                    this.RightRotate(node.Parent.Parent);
+
+                    if (node.Parent != RBNode<T>.NIL)
+                    {
+                        node.Parent.Color = Color.Black;
+                        if (node.Parent.Parent != RBNode<T>.NIL)
+                        {
+                            node.Parent.Parent.Color = Color.Red;
+                            this.RightRotate(node.Parent.Parent);
+                        }
+                    }
                 }
                 else
                 {
@@ -127,19 +149,32 @@ namespace TreeDictionary.Trees.RBTree
                         node = node.Parent;
                         this.RightRotate(node);
                     }
-                    node.Parent.Color = Color.Black;
-                    node.Parent.Parent.Color = Color.Red;
-                    this.LeftRotate(node.Parent.Parent);
+
+                    if (node.Parent != RBNode<T>.NIL)
+                    {
+                        node.Parent.Color = Color.Black;
+                        if (node.Parent.Parent != RBNode<T>.NIL)
+                        {
+                            node.Parent.Parent.Color = Color.Red;
+                            this.LeftRotate(node.Parent.Parent);
+                        }
+                    }
                 }
             }
             this.root.Color = Color.Black;
         }
 
+        /// <summary>
+        /// Return false if the tree dosn't contain a node with given info.
+        /// Otherwise delete the node and return true.
+        /// </summary>
+        /// <param name="info"> The info of the node </param>
+        /// <returns></returns>
         public Boolean Delete(T info)
         {
             RBNode<T> node = root;
 
-            while (node != null)
+            while (node != RBNode<T>.NIL)
             {
                 Int32 compare = info.CompareTo(node.Info);
 
@@ -154,14 +189,14 @@ namespace TreeDictionary.Trees.RBTree
                 else
                 {
                     RBNode<T> y = node;
-                    RBNode<T> x = null;
+                    RBNode<T> x = RBNode<T>.NIL;
                     Color YOriginalColor = y.Color;
-                    if (node.Left == this.NIL)
+                    if (node.Left == RBNode<T>.NIL)
                     {
                         x = node.Right;
                         this.Transplant(node, node.Right);
                     }
-                    else if (node.Right == this.NIL)
+                    else if (node.Right == RBNode<T>.NIL)
                     {
                         x = node.Left;
                         this.Transplant(node, node.Left);
@@ -197,6 +232,10 @@ namespace TreeDictionary.Trees.RBTree
             return false;
         }
 
+        /// <summary>
+        /// Fix the tree after delete operation.
+        /// </summary>
+        /// <param name="node"> Node which violates the tree </param>
         private void DeleteFixup(RBNode<T> node)
         {
             while (node != this.root && node.Color == Color.Black)
@@ -228,6 +267,7 @@ namespace TreeDictionary.Trees.RBTree
                     node.Parent.Color = Color.Black;
                     sibling.Right.Color = Color.Black;
                     this.LeftRotate(node.Parent);
+
                     node = this.root;
                 }
                 else
@@ -240,6 +280,7 @@ namespace TreeDictionary.Trees.RBTree
                         node.Parent.Color = Color.Red;
                         this.RightRotate(node.Parent);
                         sibling = node.Parent.Left;
+
                     }
                     if (sibling.Right.Color == Color.Black && sibling.Left.Color == Color.Black)
                     {
@@ -253,21 +294,32 @@ namespace TreeDictionary.Trees.RBTree
                         this.LeftRotate(sibling);
                         sibling = node.Parent.Left;
                     }
-                    sibling.Color = node.Parent.Color;
-                    node.Parent.Color = Color.Black;
-                    sibling.Left.Color = Color.Black;
-                    this.RightRotate(node.Parent);
+                    //
+                    if (node.Parent != RBNode<T>.NIL)
+                    {
+                        sibling.Color = node.Parent.Color;
+                        node.Parent.Color = Color.Black;
+                        sibling.Left.Color = Color.Black;
+                        this.RightRotate(node.Parent);
+                    }
+
                     node = this.root;
                 }
                 node.Color = Color.Black;
             }
         }
 
+        /// <summary>
+        /// Return false if the tree dosn't contain a node with given info.
+        /// Otherwise return info by ref parameter and return true.
+        /// </summary>
+        /// <param name="info"> The info of the node </param>
+        /// <returns></returns>
         public bool Search(ref T info)
         {
             RBNode<T> node = this.root;
 
-            while (node != null)
+            while (node != RBNode<T>.NIL)
             {
                 Int32 compare = info.CompareTo(node.Info);
 
@@ -293,18 +345,23 @@ namespace TreeDictionary.Trees.RBTree
 
         }
 
+        /// <summary>
+        /// Transforms the conﬁguration of the two nodes on the right into the conﬁguration on the left.
+        /// </summary>
+        /// <param name="node"></param>
         private void LeftRotate(RBNode<T> node)
         {
             RBNode<T> right = node.Right;
             node.Right = right.Left;
-            if (right.Left != this.NIL)
+            if (right.Left != RBNode<T>.NIL)
             {
                 right.Left.Parent = node;
             }
             right.Parent = node.Parent;
-            if (node.Parent == this.NIL)
+            if (node.Parent == RBNode<T>.NIL)
             {
                 this.root = right;
+                right.Parent = RBNode<T>.NIL;
             }
             else if (node == node.Parent.Left)
             {
@@ -313,23 +370,28 @@ namespace TreeDictionary.Trees.RBTree
             else
             {
                 node.Parent.Right = right;
-                right.Left = node;
-                node.Parent = right;
             }
+            right.Left = node;
+            node.Parent = right;
         }
 
+        /// <summary>
+        /// Transforms the conﬁguration of the two nodes on the left into the conﬁguration on the right.
+        /// </summary>
+        /// <param name="node"></param>
         private void RightRotate(RBNode<T> node)
         {
             RBNode<T> left = node.Left;
             node.Left = left.Right;
-            if (left.Right != this.NIL)
+            if (left.Right != RBNode<T>.NIL)
             {
                 left.Right.Parent = node;
             }
             left.Parent = node.Parent;
-            if (node.Parent == this.NIL)
+            if (node.Parent == RBNode<T>.NIL)
             {
                 this.root = left;
+                left.Parent = RBNode<T>.NIL;
             }
             else if (node == node.Parent.Right)
             {
@@ -338,14 +400,19 @@ namespace TreeDictionary.Trees.RBTree
             else
             {
                 node.Parent.Left = left;
-                left.Right = node;
-                node.Parent = left;
             }
+            left.Right = node;
+            node.Parent = left;
         }
 
+        /// <summary>
+        /// Transplant two nodes
+        /// </summary>
+        /// <param name="u"> The first node </param>
+        /// <param name="v"> The second node </param>
         private void Transplant(RBNode<T> u, RBNode<T> v)
         {
-            if (u.Parent == this.NIL)
+            if (u.Parent == RBNode<T>.NIL)
             {
                 this.root = v;
             }
@@ -360,16 +427,24 @@ namespace TreeDictionary.Trees.RBTree
             v.Parent = u.Parent;
         }
 
+        /// <summary>
+        /// Return the node with min info in the given tree
+        /// </summary>
+        /// <param name="root"> The root </param>
+        /// <returns></returns>
         private RBNode<T> TreeMin(RBNode<T> root)
         {
             RBNode<T> min = root;
-            while (min.Left != this.NIL)
+            while (min.Left != RBNode<T>.NIL)
             {
                 min = min.Left;
             }
             return min;
         }
 
+        /// <summary>
+        /// Removes all nodes from the tree
+        /// </summary>
         public void Clear()
         {
             this.root = null;

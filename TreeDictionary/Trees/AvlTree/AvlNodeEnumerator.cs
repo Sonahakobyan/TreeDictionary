@@ -65,10 +65,10 @@ namespace TreeDictionary.Trees.AvlTree
             _action = root == null ? Action.End : Action.Right;
         }
 
-        // TODO
+        
         public void Dispose()
         {
-            throw new NotImplementedException();
+            
         }
 
         public T Current

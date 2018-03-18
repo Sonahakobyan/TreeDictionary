@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace TreeDictionary.Trees
 {
+    /// <summary>
+    /// Main definition of binary search tree.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface ITree<T> : IEnumerable<T> where T : IComparable
     {
         Int32 Count { get;}

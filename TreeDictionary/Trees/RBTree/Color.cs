@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace TreeDictionary.Trees.RBTree
 {
+    /// <summary>
+    /// Colors for RBNode
+    /// </summary>
     public enum Color : Byte
     {
         Red,

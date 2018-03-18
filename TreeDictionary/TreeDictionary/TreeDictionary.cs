@@ -7,15 +7,31 @@ using TreeDictionary.Trees.RBTree;
 
 namespace TreeDictionary.TreeDictionary
 {
+    /// <summary>
+    /// Dictionary implemented via binary search tree.
+    /// </summary>
+    /// <typeparam name="TKey">Unique TKey</typeparam>
+    /// <typeparam name="TValue">TValue</typeparam>
     public class TreeDictionary<TKey, TValue> : IDictionary<TKey, TValue> where TKey : IComparable
     {
+        /// <summary>
+        /// The container.
+        /// </summary>
         private ITree<DictionaryPair<TKey, TValue>> treeContainer;
 
+        /// <summary>
+        /// Create dictionary by given collection.
+        /// </summary>
+        /// <param name="treeContainer"> The collection</param>
         public TreeDictionary(ITree<DictionaryPair<TKey, TValue>> treeContainer)
         {
             this.treeContainer = treeContainer;
         }
 
+        /// <summary>
+        /// Create empty dictionary of given tree type
+        /// </summary>
+        /// <param name="treeType"> Tree type. RB or AVL</param>
         public TreeDictionary(TreeType treeType)
         {
             switch (treeType)
@@ -25,11 +41,18 @@ namespace TreeDictionary.TreeDictionary
                     break;
 
                 case TreeType.RB:
-                    treeContainer = new RBTree<DictionaryPair<TKey, TValue>>();
+                    this.treeContainer = new RBTree<DictionaryPair<TKey, TValue>>();
                     break;
             }
         }
 
+        /// <summary>
+        /// Return value of given key.
+        /// Add a new pair with given key and value to the dictionary.
+        /// If the key is invalid, generate exception.
+        /// </summary>
+        /// <param name="key"> The key</param>
+        /// <returns></returns>
         public TValue this[TKey key]
         {
             get
@@ -57,6 +80,9 @@ namespace TreeDictionary.TreeDictionary
             }
         }
 
+        /// <summary>
+        /// Return all the keys of the dictionary.
+        /// </summary>
         public ICollection<TKey> Keys
         {
             get
@@ -70,6 +96,9 @@ namespace TreeDictionary.TreeDictionary
             }
         }
 
+        /// <summary>
+        /// Return all the values of the dictionary.
+        /// </summary>
         public ICollection<TValue> Values
         {
             get
@@ -83,30 +112,59 @@ namespace TreeDictionary.TreeDictionary
             }
         }
 
+        /// <summary>
+        /// Return count of pairs of the dictionary.
+        /// </summary>
         public Int32 Count => this.treeContainer.Count;
+
+        /// <summary>
+        /// Return true if the dictionary is readonly, and false otherwise
+        /// </summary>
         public Boolean IsReadOnly => false;
 
+        /// <summary>
+        /// Adds the specified key and value to the dictionary.
+        /// </summary>
+        /// <param name="key">The key</param>
+        /// <param name="value">The value</param>
         public void Add(TKey key, TValue value)
         {
             DictionaryPair<TKey, TValue> pair = new DictionaryPair<TKey, TValue>(key, value);
             this.treeContainer.Insert(pair);
         }
 
+        /// <summary>
+        /// Adds the specified item to the dictionary.
+        /// </summary>
+        /// <param name="item">The pair</param>
         public void Add(KeyValuePair<TKey, TValue> item)
         {
             this.Add(item.Key, item.Value);
         }
 
+        /// <summary>
+        /// Removes all keys and values from the dictionary.
+        /// </summary>
         public void Clear()
         {
             this.treeContainer.Clear();
         }
 
+        /// <summary>
+        /// True if the dictionary contains the specified element; otherwise, false.
+        /// </summary>
+        /// <param name="item">The pair</param>
+        /// <returns></returns>
         public Boolean Contains(KeyValuePair<TKey, TValue> item)
         {
             return this.ContainsKey(item.Key);
         }
 
+        /// <summary>
+        /// True if the dictionary contains an element with the specified key; otherwise, false.
+        /// </summary>
+        /// <param name="key">The key</param>
+        /// <returns></returns>
         public Boolean ContainsKey(TKey key)
         {
             DictionaryPair<TKey, TValue> pair = new DictionaryPair<TKey, TValue>(key, default(TValue));
@@ -127,21 +185,45 @@ namespace TreeDictionary.TreeDictionary
             }
         }
 
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the dictionary.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return GetEnumerator();
+            foreach (DictionaryPair<TKey, TValue> item in this.treeContainer)
+            {
+                yield return new KeyValuePair<TKey, TValue>(item.Key, item.Value);
+            }
         }
 
+        /// <summary>
+        /// Removes the value with the specified key from the dictionary.
+        /// </summary>
+        /// <param name="key">The key</param>
+        /// <returns></returns>
         public Boolean Remove(TKey key)
         {
             return this.treeContainer.Delete(new DictionaryPair<TKey, TValue>(key, default(TValue)));
         }
 
+        /// <summary>
+        /// Removes the value with the specified item from the dictionary
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public Boolean Remove(KeyValuePair<TKey, TValue> item)
         {
             return this.Remove(item.Key);
         }
 
+        /// <summary>
+        /// Gets the value associated with the specified key.
+        /// </summary>
+        /// <param name="key">TKey</param>
+        /// <param name="value">TValue</param>
+        /// <returns></returns>
         public Boolean TryGetValue(TKey key, out TValue value)
         {
             try

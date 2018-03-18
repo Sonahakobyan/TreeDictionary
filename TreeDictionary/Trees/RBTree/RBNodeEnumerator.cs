@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace TreeDictionary.Trees.RBTree
 {
-    public sealed class RBNodeEnumerator<T> : IEnumerator<T>
+    public sealed class RBNodeEnumerator<T> : IEnumerator<T> where T : IComparable
     {
         private RBNode<T> root;
         private Action _action;
@@ -14,7 +14,7 @@ namespace TreeDictionary.Trees.RBTree
         public RBNodeEnumerator(RBNode<T> root)
         {
             right = this.root = root;
-            _action = this.root == null ? Action.End : Action.Right;
+            _action = this.root == null && this.root != RBNode<T>.NIL ? Action.End : Action.Right;
         }
 
         public Boolean MoveNext()
@@ -23,19 +23,18 @@ namespace TreeDictionary.Trees.RBTree
             {
                 case Action.Right:
                     current = right;
-
-                    while (current.Left != null)
+                    while (current.Left != null && current.Left != RBNode<T>.NIL)
                     {
                         current = current.Left;
                     }
 
                     right = current.Right;
-                    _action = right != null ? Action.Right : Action.Parent;
+                    _action = right != null && right != RBNode<T>.NIL ? Action.Right : Action.Parent;
 
                     return true;
 
                 case Action.Parent:
-                    while (current.Parent != null)
+                    while (current.Parent != null && current.Parent != RBNode<T>.NIL)
                     {
                         RBNode<T> previous = current;
 
@@ -57,7 +56,7 @@ namespace TreeDictionary.Trees.RBTree
                 default:
                     return false;
             }
-        }
+        } 
 
         public void Reset()
         {
@@ -65,10 +64,9 @@ namespace TreeDictionary.Trees.RBTree
             _action = root == null ? Action.End : Action.Right;
         }
 
-        // TODO
+        
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
 
         public T Current
